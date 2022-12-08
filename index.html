@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css" />
+    <title>Path Finding Algorithms Visualization</title>
+</head>
+<body>
+    <!-- header -->
+    <div class="header">
+
+        <!-- h1 -->
+        <div class="head-item">
+            <h1>Path Finder</h1>
+        </div>
+
+        <!-- mages button -->
+        <div class="dropdown head-item">
+            <button type="button" class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="mages">
+              Mages
+            </button>
+            <div class="dropdown-menu bg-dark dropdown-menu-lg-start">
+                <button type="button" class="dropdown-item" id="walls-random">Random Walls</button>
+                <button type="button" class="dropdown-item" id="weights-random">Random Weights</button>
+                <button type="button" class="dropdown-item" id="recursive-backtracking">Recursive Backtracking</button>
+                <button type="button" class="dropdown-item" id="merge">Djastras</button>
+                <button type="button" class="dropdown-item" id="quick">A*</button>
+            </div>
+        </div>
+
+        <!-- node size -->
+        <div class="head-item">
+            <label for="cell-dimen">
+                Node Size:<input type="range" name="cell-dimen" id="cell-dimen" min="16" max="64" step="1" value="40" class="form-control-range"/>
+            </label>
+        </div>
+
+        <!-- speed -->
+        <div class="head-item">
+            <label for="speed">
+                Speed:<input type="range" name="speed" id="speed" min="0.01" max="300" step="0.05" value="1" class="form-control-range"/>
+            </label>
+        </div>
+
+        <!-- wall/weight -->
+        <div class="btn-group head-item" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="btnradio" id="wallRadio" autocomplete="off" checked>
+            <label class="btn btn-outline-light" for="wallRadio">wall</label>
+          
+            <input type="radio" class="btn-check" name="btnradio" id="weightRadio" autocomplete="off">
+            <label class="btn btn-outline-light" for="weightRadio">weight</label>
+        </div>
+
+        <!-- clear-path -->
+        <div class="head-item">
+            <button type="button" class="btn btn-dark" id="clear-path">clear paths</button>
+        </div>
+
+        <!-- clear-walls -->
+        <div class="head-item">
+            <button type="button" class="btn btn-dark" id="clear-walls">clear walls</button>
+        </div>
+
+        <!-- start visualization -->
+        <div class="dropdown head-item" id="start-btn-div">
+            <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="start">
+              Start
+            </button>
+            <div class="dropdown-menu bg-dark dropdown-menu-lg-end">
+                <button type="button" class="dropdown-item" id="bfs">BFS</button>
+                <button type="button" class="dropdown-item" id="dfs">DFS</button>
+                <button type="button" class="dropdown-item" id="swarm">Swarm</button>
+                <button type="button" class="dropdown-item" id="djastras">Djastras</button>
+                <button type="button" class="dropdown-item" id="a-star">A*</button>
+            </div>
+        </div>
+
+        <!-- collapse-a -->
+        <a data-bs-toggle="collapse" href="#collapse-div" role="button" aria-expanded="false" aria-controls="collapse-div" id="collapse-a">
+            <img id="collapse-button" src="images/arrow.png" alt="arrow" unselectable="on">
+        </a>
+    </div>
+
+    <!-- hidden info -->
+    <div class="collapse" id="collapse-div">
+        <div id="legend">
+            <div class="legend-item">
+                <div class="empty"></div>
+                empty cell
+            </div>
+            <div class="legend-item">
+                <div class="wall"></div>
+                wall
+            </div>
+            <div class="legend-item">
+                <div class="weight"></div>
+                weight
+            </div>
+            <div class="legend-item">
+                <img src="images/rocket.png" alt="rocket image" class="start">
+                start node
+            </div>
+            <div class="legend-item">
+                <img src="images/target.png" alt="target image" class="target">
+                target node
+            </div>
+            <div class="legend-item">
+                <div class="visited"></div>
+                visited node
+            </div>
+            <div class="legend-item">
+                <div class="path"></div>
+                path node
+            </div>
+        </div>
+    </div>
+
+    <!-- grid -->
+    <div id="container">
+        <table id="grid" >
+          </table>
+    </div>
+
+    <!-- credits -->
+    <div id="credit"> 
+        Developed by <a href="https://pawanverma.host20.uk">Pawan Verma</a> |
+        Icons from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> |
+        Color Palette from <a href="https://colorhunt.co/palette/08d9d6252a34ff2e63eaeaea">colorhunt.co</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

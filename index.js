@@ -1,6 +1,6 @@
 window.onresize = function(){ location.reload(); }
 const container = document.getElementById("container");
-const grid = document.getElementById("grid");
+const table = document.getElementById("table");
 const sizeInput = document.getElementById("cell-dimen");
 const wallRadio = document.getElementById("wallRadio");
 const weightRadio = document.getElementById("weightRadio");
@@ -17,9 +17,8 @@ const dirs = ['E', 'S', 'W', 'N']
 const values = { "wall" : Infinity,
     "weight" : 10,
     "empty" : 1,
-    "visited" : Infinity,
-    "start" : 0,
-    "target" :  180
+    "start" : -1,
+    "target" :  0
 };
 
 //grid intial values
@@ -29,15 +28,9 @@ const values = { "wall" : Infinity,
 //         this.x = x;
 //         this.y = y;
 //         this.type = type;
+//         this.isStart = false;
 //         this.isTarget = false;
 //         this.value = values[type];
-//     }
-//     setCell(type){
-//         document.getElementById(`${x+"-"+y}`).setAttribute("class", `${type}`);
-//         if(type == "start" || type == "target"){
-//             document.getElementById(`${x+"-"+y}`).removeEventListener("mouseover", paintBrushPopulator);
-//             document.getElementById(`${x+"-"+y}`).removeEventListener("click", cellClickToggler);
-//         }
 //     }
 // }
 
@@ -47,21 +40,48 @@ var cell_dimen = 40;
 var speed = 100;
 var row_count = Math.floor(container.clientHeight/cell_dimen);
 var col_count = Math.floor(container.clientWidth/cell_dimen);
-let Graph = Array(row_count).fill().map(() => Array(col_count).fill(0));
+let Grid = Array(row_count).fill().map(() => Array(col_count).fill(0));
 //
 
 // some functions for readability
 function setCell(x, y, type){
-    Graph[x][y] = values[type];
+    Grid[x][y] = values[type];
     document.getElementById(`${x+"-"+y}`).setAttribute("class", `${type}`);
 }
 function setTerminals(x, y, type){
-    Graph[x][y] = values[`${type}`];
+    Grid[x][y] = values[`${type}`];
     var el = document.getElementById(`${x+"-"+y}`);
     el.setAttribute("class", `${type}`);
     el.removeEventListener("mouseover", paintBrushPopulator);
     el.removeEventListener("click", cellClickToggler);
 }
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function generateFence(){
+    var d = 0, i = 0, j = 0;
+    while(Grid[i][j] != Infinity){
+        if(Grid[i][j] == 0 || Grid[i][j] == -1) continue;
+        await timeout(speed);
+        setCell(i, j, "wall");
+        var ni = i + DX[dirs[d]], nj = j + DY[dirs[d]];
+        if(ni < 0 || nj < 0 || nj >= col_count || ni >= row_count) d++;
+        ni = i + DX[dirs[d]];
+        nj = j + DY[dirs[d]];
+        i = ni, j = nj;
+    }
+}
+function shuffle(arr){
+    var j, x, i = arr.length;
+    while (i) {
+        j = Math.floor(Math.random() * i);
+        x = arr[--i];
+        arr[i] = arr[j];
+        arr[j] = x;
+    }
+    return arr;
+};
+
 //
 
 
@@ -76,7 +96,7 @@ document.getElementById("collapse-button").addEventListener("click", (e)=>{
 
 //grid generation
 function generateGrid(){
-    grid.innerHTML = "";
+    table.innerHTML = "";
     for(var i = 0; i < row_count; i++){
         var t_row = document.createElement("tr");
         t_row.setAttribute("id", "row"+i);
@@ -91,9 +111,9 @@ function generateGrid(){
             t_cell.addEventListener("click", cellClickToggler);
             t_row.appendChild(t_cell);
         }
-        grid.appendChild(t_row);
+        table.appendChild(t_row);
     }
-    Graph = new Array(row_count).fill().map(() => Array(col_count).fill(0));
+    Grid = new Array(row_count).fill().map(() => Array(col_count).fill(0));
     setTerminals(2, 2, "start");
     setTerminals(row_count-3, col_count-3, "target");
 }
@@ -155,7 +175,7 @@ function randomPopulator(e){
     else type = "weight";
     for(var i = 0; i < row_count; i++){
         for(var j = 0; j < col_count; j++){
-            if(Graph[i][j] == 2 || Graph[i][j] == 3) continue;
+            if(Grid[i][j] == 2 || Grid[i][j] == 3) continue;
             var r = 0.3 - Math.random();
             if(r > 0) setCell(i, j, type);
             else setCell(i, j, "empty");
@@ -163,36 +183,11 @@ function randomPopulator(e){
     }
 }
 //
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-async function generateFence(){
-    var d = 0, i = 0, j = 0;
-    while(Graph[i][j] != Infinity){
-        // if(Graph[i][j] == 0) continue;
-        await timeout(spped);
-        setCell(i, j, "wall");
-        var ni = i + DX[dirs[d]], nj = j + DY[dirs[d]];
-        if(ni < 0 || nj < 0 || nj >= col_count || ni >= row_count) d++;
-        ni = i + DX[dirs[d]];
-        nj = j + DY[dirs[d]];
-        i = ni, j = nj;
-    }
-}
-
-generateFence();
-// function dfs(){
-
-// }
 
 // function recursiveBacktracker(){
 //     generateFence();
 // }
 
-// function shuffle(o){
-//     for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-//     return o;
-// };
 
 // function carve_passages_from(cx, cy, Graph) {
 //     var directions = shuffle(dirs)

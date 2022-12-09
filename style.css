@@ -130,7 +130,7 @@ button {
 }
 
 td {
-    transition: background-color 0.15s linear, background-image 0.2s linear;
+    transition: all 0.15s linear;
 }
 
 .empty {

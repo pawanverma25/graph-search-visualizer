@@ -12,12 +12,13 @@ const values = { "wall" : Infinity,
     "target" : -2
 };
 
-var cell_dimen = 64;
-var speed = 100;
+var cell_dimen = 40;
+let speed = 100;
 var row_count = Math.floor(container.clientHeight/cell_dimen);
 var col_count = Math.floor(container.clientWidth/cell_dimen);
-let Grid = new Array(row_count).fill().map(() => Array(col_count).fill(0));
+let Grid = new Array(row_count).fill().map(() => Array(col_count).fill(1));
 let start = {x:2, y:2}, target = {x:row_count-3, y:col_count-3};
+var being_dragged = 0;
 //
 
 // some functions for readability
@@ -26,13 +27,32 @@ function setCell(x, y, type){
     Grid[x][y] = values[type];
     document.getElementById(`${x+"-"+y}`).setAttribute("class", `${type}`);
 }
-
+function setCellEL(el, type){
+    var i = parseInt(el.getAttribute("id").split("-")[0]);
+    var j = parseInt(el.getAttribute("id").split("-")[1]);
+    setCell(i, j, type);
+}
 function setTerminals(x, y, type){
     Grid[x][y] = values[`${type}`];
+    if(type == "start"){
+        start.x = x;
+        start.y = y;
+    } else {
+        target.x = x;
+        target.y = y;
+    }
     var el = document.getElementById(`${x+"-"+y}`);
     el.setAttribute("class", `${type}`);
     el.removeEventListener("mouseover", paintBrushPopulator);
     el.removeEventListener("click", cellClickToggler);
+    removeEventListener("drop", dragEndListener);
+    el.addEventListener("dragstart", terminalDragger);
+}
+
+function setTerminalsEl(el, type){
+    var i = parseInt(el.getAttribute("id").split("-")[0]);
+    var j = parseInt(el.getAttribute("id").split("-")[1]);
+    setTerminals(i, j, type);
 }
 
 async function timeout(ms) {
@@ -81,6 +101,10 @@ function generateGrid(){
             t_cell.setAttribute("id", `${i+"-"+j}`);
             t_cell.addEventListener("mouseover", paintBrushPopulator);
             t_cell.addEventListener("click", cellClickToggler);
+            t_cell.addEventListener("dragenter", dragEnterListener);
+            t_cell.addEventListener("dragleave", dragLeaveListener);
+            t_cell.addEventListener("dragover", (e)=>{e.preventDefault();});
+            t_cell.addEventListener("drop", dragEndListener);
             t_row.appendChild(t_cell);
         }
         table.appendChild(t_row);
@@ -97,6 +121,7 @@ sizeInput.addEventListener("input", ()=>{
     cell_dimen = sizeInput.value;
     row_count = Math.floor(container.clientHeight/cell_dimen);
     col_count = Math.floor(container.clientWidth/cell_dimen);
+    start = {x:2, y:2}, target = {x:row_count-3, y:col_count-3};
     generateGrid();
 });
 //
@@ -107,7 +132,7 @@ document.addEventListener("input", (e)=>{
 });
 //
 
-// user added walls and weights 
+// clicks an other
 function paintBrushPopulator(e){
     var x = parseInt(e.target.getAttribute("id").split("-")[0]);
     var y = parseInt(e.target.getAttribute("id").split("-")[1]);
@@ -116,7 +141,6 @@ function paintBrushPopulator(e){
         else if(weightRadio.checked == true) setCell(x, y, "weight");
         else setCell(x, y, "empty");
     }
-    e.preventDefault();
 }
 function cellClickToggler(e){
     var x = parseInt(e.target.getAttribute("id").split("-")[0]);
@@ -124,6 +148,38 @@ function cellClickToggler(e){
     if(wallRadio.checked == true) setCell(x, y, "wall");
     else if(weightRadio.checked == true) setCell(x, y, "weight");
     else setCell(x, y, "empty");
+}
+function terminalDragger(e){
+    if(e.target.classList[0] == "start") being_dragged = 1;
+    else being_dragged = 2;
+}
+function dragEnterListener(e){
+    e.preventDefault();
+    if(being_dragged == 1) e.target.style.borderColor = "#0275d8";
+    else e.target.style.borderColor = "#d9534f";
+    e.target.style.borderWidth = "3px";
+}
+function dragLeaveListener(e){
+    e.target.style.borderWidth = "0.5px";
+    e.target.style.borderColor = "#FF2E63";
+}
+function dragEndListener(e) {
+    e.preventDefault();
+    if(being_dragged == 1){
+        if(e.target.getAttribute("id") != `${target.x+"-"+target.y}`){
+            Grid[start.x][start.y] = 1;
+            setCell(start.x, start.y, "empty");
+            setTerminalsEl(e.target, "start")
+        }
+    } else {
+        if(e.target.getAttribute("id") != `${start.x+"-"+start.y}`){
+            Grid[target.x][target.y] = 1;
+            setCell(target.x, target.y, "empty");
+            setTerminalsEl(e.target, "target")
+        }
+    }
+    e.target.style.borderWidth = "0.5px";
+    e.target.style.borderColor = "#FF2E63";
 }
 //
 

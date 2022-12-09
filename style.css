@@ -107,7 +107,7 @@ button {
 
 #container {
     width: 100%;
-    height: 85vh;
+    height: 79vh;
     display: flex;
     align-content: center;
     justify-content: center;
@@ -130,7 +130,7 @@ button {
 }
 
 td {
-    transition: all 0.15s linear;
+    transition: background-color 0.1s linear;
 }
 
 .empty {
@@ -141,11 +141,17 @@ td {
 .start {
     border: 0.5px solid #FF2E63;
     background-image: url('images/rocket.png');
+    -webkit-user-drag: element;
+    cursor: -webkit-grab;
+    cursor: grab;
 }
 
 .target {
     border: 0.5px solid #FF2E63;
     background-image: url('images/target.png');
+    -webkit-user-drag: element;
+    cursor: -webkit-grab;
+    cursor: grab;
 }
 
 .wall {

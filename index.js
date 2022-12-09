@@ -8,10 +8,10 @@ const weightRadio = document.getElementById("weightRadio");
 //   , S = 2
 //   , E = 4
 //   , W = 8
-//   , dirs = ['N', 'E', 'S', 'W']
+const dirs = ['E', 'S', 'W', 'N']
 //   , dirsValue = { N: N, E: E, S: S, W: W }
-//   , DX = { E: 1, W: -1, N: 0, S: 0 }
-//   , DY = { E: 0, W: 0, N: -1, S: 1 }
+  , DX = { E: 1, W: -1, N: 0, S: 0 }
+  , DY = { E: 0, W: 0, N: -1, S: 1 }
 //   , OPPOSITE = { E: W, W: E, N: S, S: N }
 
 const values = { "wall" : Infinity,
@@ -44,6 +44,7 @@ const values = { "wall" : Infinity,
 
 // var start = new Cell(2, 2, "start"), target = new Cell;
 var cell_dimen = 40;
+var speed = 100;
 var row_count = Math.floor(container.clientHeight/cell_dimen);
 var col_count = Math.floor(container.clientWidth/cell_dimen);
 let Graph = Array(row_count).fill().map(() => Array(col_count).fill(0));
@@ -100,6 +101,7 @@ generateGrid();
 //
 
 
+
 //grid resizer
 sizeInput.addEventListener("input", ()=>{
     cell_dimen = sizeInput.value;
@@ -109,7 +111,11 @@ sizeInput.addEventListener("input", ()=>{
 });
 //
 
-
+//speed input
+document.addEventListener("input", (e)=>{
+    speed = 201 - e.target.value;
+});
+//
 
 // user added walls and weights 
 function paintBrushPopulator(e){
@@ -157,18 +163,24 @@ function randomPopulator(e){
     }
 }
 //
-
-function generateFence(){
-    for(var i = 0; i < row_count; i++){
-        setCell(i, 0, "wall");
-        setCell(i, col_count-1, "wall");
-    }
-    for(var j = 0; j < col_count; j++){
-        setCell(0, j, "wall");
-        setCell(row_count-1, j, "wall");
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function generateFence(){
+    var d = 0, i = 0, j = 0;
+    while(Graph[i][j] != Infinity){
+        // if(Graph[i][j] == 0) continue;
+        await timeout(spped);
+        setCell(i, j, "wall");
+        var ni = i + DX[dirs[d]], nj = j + DY[dirs[d]];
+        if(ni < 0 || nj < 0 || nj >= col_count || ni >= row_count) d++;
+        ni = i + DX[dirs[d]];
+        nj = j + DY[dirs[d]];
+        i = ni, j = nj;
     }
 }
 
+generateFence();
 // function dfs(){
 
 // }

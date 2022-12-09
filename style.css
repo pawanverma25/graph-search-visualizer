@@ -129,6 +129,10 @@ button {
     font-weight: 500;
 }
 
+td {
+    transition: background-color 0.15s linear, background-image 0.2s linear;
+}
+
 .empty {
     border: 0.5px solid #FF2E63;
     background-color: #EAEAEA;

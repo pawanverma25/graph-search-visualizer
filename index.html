@@ -26,16 +26,15 @@
             <div class="dropdown-menu bg-dark dropdown-menu-lg-start">
                 <button type="button" class="dropdown-item" id="walls-random">Random Walls</button>
                 <button type="button" class="dropdown-item" id="weights-random">Random Weights</button>
-                <button type="button" class="dropdown-item" id="recursive-backtracking">Recursive Backtracking</button>
-                <button type="button" class="dropdown-item" id="merge">Djastras</button>
-                <button type="button" class="dropdown-item" id="quick">A*</button>
+                <button type="button" class="dropdown-item" id="recursive-division-horizontal">Recursive Division (Horizontal Skew)</button>
+                <button type="button" class="dropdown-item" id="recursive-division-vertical">Recursive Division (vertical Skew)</button>
             </div>
         </div>
 
         <!-- node size -->
         <div class="head-item">
             <label for="cell-dimen">
-                Node Size:<input type="range" name="cell-dimen" id="cell-dimen" min="16" max="64" step="1" value="40" class="form-control-range"/>
+                Node Size:<input type="range" name="cell-dimen" id="cell-dimen" min="16" max="64" step="1" value="64" class="form-control-range"/>
             </label>
         </div>
 
@@ -48,7 +47,10 @@
 
         <!-- wall/weight -->
         <div class="btn-group head-item" role="group" aria-label="Basic radio toggle button group">
-            <input type="radio" class="btn-check" name="btnradio" id="wallRadio" autocomplete="off" checked>
+            <input type="radio" class="btn-check" name="btnradio" id="emptyRadio" autocomplete="off" checked>
+            <label class="btn btn-outline-light" for="emptyRadio">empty</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="wallRadio" autocomplete="off">
             <label class="btn btn-outline-light" for="wallRadio">wall</label>
           
             <input type="radio" class="btn-check" name="btnradio" id="weightRadio" autocomplete="off">

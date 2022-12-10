@@ -226,28 +226,27 @@ async function addOuterWalls() {
     }
 }
 
-async function addInnerWalls(v, minj, maxj, mini, maxi) {
-    if (v) {
+async function addInnerWalls(h, minj, maxj, mini, maxi) {
+    if (h) {
         if (maxj - minj < 2) {
             return;
         }
         var y = Math.floor(randomNumber(mini, maxi)/2)*2;
-        await addVWall(minj, maxj, y);
-        await addInnerWalls(!v, minj, maxj, mini, y-1);
-        await addInnerWalls(!v, minj, maxj, y + 1, maxi);
+        await addHWall(minj, maxj, y);
+        await addInnerWalls(!h, minj, maxj, mini, y-1);
+        await addInnerWalls(!h, minj, maxj, y + 1, maxi);
     } else {
         if (maxi - mini < 2) {
             return;
         }
-
         var x = Math.floor(randomNumber(minj, maxj)/2)*2;
-        await addHWall(mini, maxi, x);
-        await addInnerWalls(!v, minj, x-1, mini, maxi);
-        await addInnerWalls(!v, x + 1, maxj, mini, maxi);
+        await addVWall(mini, maxi, x);
+        await addInnerWalls(!h, minj, x-1, mini, maxi);
+        await addInnerWalls(!h, x + 1, maxj, mini, maxi);
     }
 }
 
-async function addVWall(minj, maxj, y) {
+async function addHWall(minj, maxj, y) {
     var hole = Math.floor(randomNumber(minj, maxj)/2)*2+1;
     for (var i = minj; i <= maxj; i++) {
         await timeout(speed);
@@ -256,7 +255,7 @@ async function addVWall(minj, maxj, y) {
     }
 }
 
-async function addHWall(mini, maxi, x) {
+async function addVWall(mini, maxi, x) {
     var hole = Math.floor(randomNumber(mini, maxi)/2)*2+1;
 
     for (var i = mini; i <= maxi; i++) {

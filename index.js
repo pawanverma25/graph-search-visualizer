@@ -45,7 +45,7 @@ function setTerminals(x, y, type){
     el.setAttribute("class", `${type}`);
     el.removeEventListener("mouseover", paintBrushPopulator);
     el.removeEventListener("click", cellClickToggler);
-    removeEventListener("drop", dragEndListener);
+    removeEventListener("drop", dropListener);
     el.addEventListener("dragstart", terminalDragger);
 }
 
@@ -78,10 +78,13 @@ function randomNumber(min, max) {
 
 
 // collapseable
-var angle = 0;
+var angle = 180, collapsed = false;
 document.getElementById("collapse-button").addEventListener("click", (e)=>{
     angle = (180 + angle) % 360;
     e.target.style.transform = `rotate(${angle}deg)`;
+    if(!collapsed) document.getElementById("legend").style.height = "0px";
+    else document.getElementById("legend").style.height = "45px";
+    collapsed = !collapsed;
 });
 //
 
@@ -104,7 +107,7 @@ function generateGrid(){
             t_cell.addEventListener("dragenter", dragEnterListener);
             t_cell.addEventListener("dragleave", dragLeaveListener);
             t_cell.addEventListener("dragover", (e)=>{e.preventDefault();});
-            t_cell.addEventListener("drop", dragEndListener);
+            t_cell.addEventListener("drop", dropListener);
             t_row.appendChild(t_cell);
         }
         table.appendChild(t_row);
@@ -149,6 +152,7 @@ function cellClickToggler(e){
     else if(weightRadio.checked == true) setCell(x, y, "weight");
     else setCell(x, y, "empty");
 }
+
 function terminalDragger(e){
     if(e.target.classList[0] == "start") being_dragged = 1;
     else being_dragged = 2;
@@ -163,7 +167,7 @@ function dragLeaveListener(e){
     e.target.style.borderWidth = "0.5px";
     e.target.style.borderColor = "#FF2E63";
 }
-function dragEndListener(e) {
+function dropListener(e) {
     e.preventDefault();
     if(being_dragged == 1){
         if(e.target.getAttribute("id") != `${target.x+"-"+target.y}`){
@@ -222,15 +226,15 @@ async function addOuterWalls() {
     }
 }
 
-async function addInnerWalls(h, minj, maxj, mini, maxi) {
-    if (!h) {
+async function addInnerWalls(v, minj, maxj, mini, maxi) {
+    if (v) {
         if (maxj - minj < 2) {
             return;
         }
         var y = Math.floor(randomNumber(mini, maxi)/2)*2;
         await addVWall(minj, maxj, y);
-        await addInnerWalls(!h, minj, maxj, mini, y-1);
-        await addInnerWalls(!h, minj, maxj, y + 1, maxi);
+        await addInnerWalls(!v, minj, maxj, mini, y-1);
+        await addInnerWalls(!v, minj, maxj, y + 1, maxi);
     } else {
         if (maxi - mini < 2) {
             return;
@@ -238,8 +242,8 @@ async function addInnerWalls(h, minj, maxj, mini, maxi) {
 
         var x = Math.floor(randomNumber(minj, maxj)/2)*2;
         await addHWall(mini, maxi, x);
-        await addInnerWalls(!h, minj, x-1, mini, maxi);
-        await addInnerWalls(!h, x + 1, maxj, mini, maxi);
+        await addInnerWalls(!v, minj, x-1, mini, maxi);
+        await addInnerWalls(!v, x + 1, maxj, mini, maxi);
     }
 }
 
@@ -265,11 +269,11 @@ async function addHWall(mini, maxi, x) {
 document.getElementById("recursive-division-vertical").addEventListener("click", async ()=>{
     generateGrid();
     await addOuterWalls();
-    await addInnerWalls(false, 1, row_count - 2, 1, col_count - 2);
+    await addInnerWalls(true, 1, row_count - 2, 1, col_count - 2);
 });
 
 document.getElementById("recursive-division-horizontal").addEventListener("click", async()=>{
     generateGrid();
     await addOuterWalls();
-    await addInnerWalls(true, 1, row_count - 2, 1, col_count - 2);
+    await addInnerWalls(false, 1, row_count - 2, 1, col_count - 2);
 });

@@ -33,17 +33,21 @@ h1 {
 
 #legend {
     width: 80%;
+    height: 45px;
     margin: auto;
     display: flex;
     align-items: center;
     justify-items: center;
     flex-wrap: wrap;
     color: #252A34;
+    overflow-y: hidden;
+    transition: height 0.5s;
 }
 
 #collapse-button {
     width: 20px;
     height: 20px;
+    transform: rotate(180deg);
     transition: transform 0.25s;
 }
 
@@ -173,4 +177,12 @@ td {
 .path {
      background-color: #5cb85c;
      border: 0.5px solid #FF2E63;
+}
+
+.start:active, .target:active {
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+    cursor: -o-grabbing;
+    cursor: -ms-grabbing;
+    cursor: grabbing;
 }

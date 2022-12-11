@@ -35,23 +35,23 @@
         <!-- node size -->
         <div class="head-item">
             <label for="cell-dimen">
-                Node Size:<input type="range" name="cell-dimen" id="cell-dimen" min="16" max="64" step="1" value="40" class="form-control-range"/>
+                Node Size:<input type="range" name="cell-dimen" id="cell-dimen" min="20" max="64" step="1" value="40" class="form-control-range"/>
             </label>
         </div>
 
         <!-- speed -->
         <div class="head-item">
             <label for="speed">
-                Speed:<input type="range" name="speed" id="speed" min="1" max="200" step="1" value="100" class="form-control-range"/>
+                Speed:<input type="range" name="speed" id="speed" min="1" max="50" step="0.5" value="50" class="form-control-range"/>
             </label>
         </div>
 
         <!-- wall/weight -->
         <div class="btn-group head-item" role="group" aria-label="Basic radio toggle button group">
-            <input type="radio" class="btn-check" name="btnradio" id="emptyRadio" autocomplete="off" checked>
+            <input type="radio" class="btn-check" name="btnradio" id="emptyRadio" autocomplete="off">
             <label class="btn btn-outline-light" for="emptyRadio">empty</label>
 
-            <input type="radio" class="btn-check" name="btnradio" id="wallRadio" autocomplete="off">
+            <input type="radio" class="btn-check" name="btnradio" id="wallRadio" autocomplete="off" checked>
             <label class="btn btn-outline-light" for="wallRadio">wall</label>
           
             <input type="radio" class="btn-check" name="btnradio" id="weightRadio" autocomplete="off">
@@ -70,7 +70,7 @@
 
         <!-- start visualization -->
         <div class="dropdown head-item" id="start-btn-div">
-            <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="start">
+            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="start">
               Start
             </button>
             <div class="dropdown-menu bg-dark dropdown-menu-lg-end">

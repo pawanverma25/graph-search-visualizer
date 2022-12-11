@@ -1,4 +1,10 @@
-window.onresize = function(){ location.reload(); }
+window.onresize = function(){ 
+    row_count = Math.floor(container.clientHeight/cell_dimen);
+    col_count = Math.floor(container.clientWidth/cell_dimen);
+    Grid = new Array(row_count).fill().map(() => Array(col_count).fill(1));
+    start = {x:2, y:2}, target = {x:row_count-3, y:col_count-3};
+    generateGrid();
+ }
 const container = document.getElementById("container");
 const table = document.getElementById("table");
 const sizeInput = document.getElementById("cell-dimen");
@@ -13,7 +19,7 @@ const values = { "wall" : Infinity,
 };
 
 var cell_dimen = 40;
-let speed = 100;
+var time = 0.01;
 var row_count = Math.floor(container.clientHeight/cell_dimen);
 var col_count = Math.floor(container.clientWidth/cell_dimen);
 let Grid = new Array(row_count).fill().map(() => Array(col_count).fill(1));
@@ -78,12 +84,12 @@ function randomNumber(min, max) {
 
 
 // collapseable
-var angle = 180, collapsed = false;
+var angle = 0, collapsed = true;
 document.getElementById("collapse-button").addEventListener("click", (e)=>{
     angle = (180 + angle) % 360;
     e.target.style.transform = `rotate(${angle}deg)`;
-    if(!collapsed) document.getElementById("legend").style.height = "0px";
-    else document.getElementById("legend").style.height = "45px";
+    if(collapsed) document.getElementById("legend").style.maxHeight = "280px";
+    else document.getElementById("legend").style.maxHeight = "0px";
     collapsed = !collapsed;
 });
 //
@@ -130,8 +136,8 @@ sizeInput.addEventListener("input", ()=>{
 //
 
 //speed input
-document.addEventListener("input", (e)=>{
-    speed = 201 - e.target.value;
+document.getElementById("speed").addEventListener("input", (e)=>{
+    time = 50.01 - e.target.value;
 });
 //
 
@@ -215,11 +221,11 @@ async function addOuterWalls() {
     for (var i = 0; i < row_count; i++) {
         if (i == 0 || i == (row_count - 1)) {
             for (var j = 0; j < col_count; j++) {
-                await timeout(speed);
+                await timeout(time);
                 setCell(i, j, "wall");
             }
         } else {
-            await timeout(speed);
+            await timeout(time);
             setCell(i, 0, "wall");
             setCell(i, col_count-1, "wall");
         }
@@ -231,48 +237,87 @@ async function addInnerWalls(h, minj, maxj, mini, maxi) {
         if (maxj - minj < 2) {
             return;
         }
-        var y = Math.floor(randomNumber(mini, maxi)/2)*2;
-        await addHWall(minj, maxj, y);
-        await addInnerWalls(!h, minj, maxj, mini, y-1);
-        await addInnerWalls(!h, minj, maxj, y + 1, maxi);
+        var x = Math.floor(randomNumber(mini, maxi)/2)*2;
+        await addHWall(minj, maxj, x);
+        await addInnerWalls(!h, minj, maxj, mini, x-1);
+        await addInnerWalls(!h, minj, maxj, x + 1, maxi);
     } else {
         if (maxi - mini < 2) {
             return;
         }
-        var x = Math.floor(randomNumber(minj, maxj)/2)*2;
-        await addVWall(mini, maxi, x);
-        await addInnerWalls(!h, minj, x-1, mini, maxi);
-        await addInnerWalls(!h, x + 1, maxj, mini, maxi);
+        var y = Math.floor(randomNumber(minj, maxj)/2)*2;
+        await addVWall(mini, maxi, y);
+        await addInnerWalls(!h, minj, y-1, mini, maxi);
+        await addInnerWalls(!h, y + 1, maxj, mini, maxi);
     }
 }
 
-async function addHWall(minj, maxj, y) {
+async function addInnerWallsH(minj, maxj, mini, maxi) {
+    if (maxi - mini < 3) {
+        var y = Math.floor(randomNumber(minj, maxj)/2)*2;
+        await addVWall(mini, maxi, y);
+        await addInnerWalls(false, minj, y-1, mini, maxi);
+        await addInnerWalls(false, y+1, maxj, mini , maxi);
+        return;
+    }
+    else {
+        var x = Math.floor(randomNumber(mini, maxi)/2)*2;
+        await addHWall(minj, maxj, x);
+        await addInnerWallsH(minj, maxj, mini, x-1);
+        await addInnerWallsH(minj, maxj, x + 1, maxi);
+    }
+}
+
+async function addInnerWallsV(minj, maxj, mini, maxi) {
+    if (maxj - minj < 3) {
+        var x = Math.floor(randomNumber(mini, maxi)/2)*2;
+        await addHWall(minj, maxj, x);
+        await addInnerWalls(true, minj, maxj, mini, x-1);
+        await addInnerWalls(true, minj, maxj, x + 1, maxi);
+    }
+    else {
+        var y = Math.floor(randomNumber(minj, maxj)/2)*2;
+        await addVWall(mini, maxi, y);
+        await addInnerWallsV(minj, y-1, mini, maxi);
+        await addInnerWallsV(y+1, maxj, mini , maxi);
+    }
+}
+
+
+async function addHWall(minj, maxj, x) {
     var hole = Math.floor(randomNumber(minj, maxj)/2)*2+1;
     for (var i = minj; i <= maxj; i++) {
-        await timeout(speed);
-        if (i == hole) setCell(i, y, "empty");
-        else setCell(i, y, "wall");
-    }
-}
-
-async function addVWall(mini, maxi, x) {
-    var hole = Math.floor(randomNumber(mini, maxi)/2)*2+1;
-
-    for (var i = mini; i <= maxi; i++) {
-        await timeout(speed);
+        await timeout(time);
         if (i == hole) setCell(x, i, "empty");
         else setCell(x, i, "wall");
     }
 }
 
+async function addVWall(mini, maxi, y) {
+    var hole = Math.floor(randomNumber(mini, maxi)/2)*2+1;
+
+    for (var i = mini; i <= maxi; i++) {
+        await timeout(time);
+        if (i == hole) setCell(i, y, "empty");
+        else setCell(i, y, "wall");
+    }
+}
+
+document.getElementById("recursive-division").addEventListener("click", async()=>{
+    generateGrid();
+    await addOuterWalls();
+
+    await addInnerWalls(Math.random() > 0.5, 1, col_count - 2, 1, row_count - 2);
+});
+
 document.getElementById("recursive-division-vertical").addEventListener("click", async ()=>{
     generateGrid();
     await addOuterWalls();
-    await addInnerWalls(true, 1, row_count - 2, 1, col_count - 2);
+    await addInnerWallsV(1, col_count - 2, 1, row_count - 2);
 });
 
 document.getElementById("recursive-division-horizontal").addEventListener("click", async()=>{
     generateGrid();
     await addOuterWalls();
-    await addInnerWalls(false, 1, row_count - 2, 1, col_count - 2);
+    await addInnerWallsH(1, col_count - 2, 1, row_count - 2);
 });

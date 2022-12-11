@@ -14,6 +14,12 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -ms-overflow-style: none;
+    scrollbar-width: none; 
+}
+
+body::-webkit-scrollbar {
+    display: none;
 }
 
 h1 {
@@ -33,26 +39,25 @@ h1 {
 
 #legend {
     width: 80%;
-    height: 45px;
     margin: auto;
     display: flex;
     align-items: center;
     justify-items: center;
     flex-wrap: wrap;
     color: #252A34;
-    overflow-y: hidden;
-    transition: height 0.5s;
+    max-height: 0;
+    transition: max-height 0.25s linear;
+    overflow: hidden;
 }
 
 #collapse-button {
     width: 20px;
     height: 20px;
-    transform: rotate(180deg);
     transition: transform 0.25s;
 }
 
 #collapse-a{
-    margin: auto 5px;
+    margin: auto 1px;
     display: flex;
     align-items: center;
 }
@@ -63,6 +68,12 @@ h1 {
     display: flex;
     justify-items: center;
     align-items: center;
+}
+
+.btn-check:focus+.btn-dark, .btn-dark:focus, .btn-check:checked+.btn-outline-light {
+    color: #ffffff;
+    background-color: #FF2E63;
+    border-color: #FF2E63;
 }
 
 .legend-item div, .legend-item img {
@@ -88,6 +99,10 @@ h1 {
     align-items: center;
 }
 
+#start {
+    background-color: #FF2E63;
+}
+
 #start-btn-div {
     flex: 2;
 }
@@ -97,7 +112,7 @@ input {
 }
 
 button {
-    width: 90%;
+    width: 95%;
     min-width: min-content;
 }
 
@@ -111,20 +126,29 @@ button {
 
 #container {
     width: 100%;
-    height: 79vh;
+    height: 85vh;
     display: flex;
     align-content: center;
     justify-content: center;
 }
-#grid{
+
+#table{
     width: 95%;
     margin-top: 10px;
 }
 
 #credit {
-    margin-left: 10px;
+    font-size: smaller;
+    margin: 3px auto;
     color: #252A34;
-    text-align: left;
+    text-align: center;
+    text-overflow: ellipsis;
+}
+
+.btn:hover, #start:hover{
+    color: #252A34;
+    background-color: #ffffff;
+    border-color: #FF2E63;
 }
 
 #credit a {
@@ -135,11 +159,11 @@ button {
 
 td {
     transition: background-color 0.1s linear;
+    background-color: #EAEAEA;
 }
 
 .empty {
     border: 0.5px solid #FF2E63;
-    background-color: #EAEAEA;
 }
 
 .start {
@@ -164,6 +188,7 @@ td {
 }
 
 .weight {
+    background-color: #EAEAEA;
     background-image: url('images/weight.png');
     background-size: cover;
     border: 0.5px solid #FF2E63;
@@ -177,12 +202,4 @@ td {
 .path {
      background-color: #5cb85c;
      border: 0.5px solid #FF2E63;
-}
-
-.start:active, .target:active {
-    cursor: -webkit-grabbing;
-    cursor: -moz-grabbing;
-    cursor: -o-grabbing;
-    cursor: -ms-grabbing;
-    cursor: grabbing;
 }

@@ -5,8 +5,8 @@
 body {
     margin: 0;
     color: #ffff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #EAEAEA;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #eaeaea;
     text-align: center;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -15,7 +15,7 @@ body {
     -ms-user-select: none;
     user-select: none;
     -ms-overflow-style: none;
-    scrollbar-width: none; 
+    scrollbar-width: none;
 }
 
 body::-webkit-scrollbar {
@@ -44,7 +44,7 @@ h1 {
     align-items: center;
     justify-items: center;
     flex-wrap: wrap;
-    color: #252A34;
+    color: #252a34;
     max-height: 0;
     transition: max-height 0.25s linear;
     overflow: hidden;
@@ -56,13 +56,13 @@ h1 {
     transition: transform 0.25s;
 }
 
-#collapse-a{
+#collapse-a {
     margin: auto 1px;
     display: flex;
     align-items: center;
 }
 
-.legend-item{
+.legend-item {
     margin: 10px 20px;
     flex: auto;
     display: flex;
@@ -70,13 +70,16 @@ h1 {
     align-items: center;
 }
 
-.btn-check:focus+.btn-dark, .btn-dark:focus, .btn-check:checked+.btn-outline-light {
+.btn-check:focus + .btn-dark,
+.btn-dark:focus,
+.btn-check:checked + .btn-outline-light {
     color: #ffffff;
-    background-color: #FF2E63;
-    border-color: #FF2E63;
+    background-color: #ff2e63;
+    border-color: #ff2e63;
 }
 
-.legend-item div, .legend-item img {
+.legend-item div,
+.legend-item img {
     margin: 0 20px;
     height: 25px;
     width: 25px;
@@ -85,7 +88,7 @@ h1 {
 
 .header {
     width: 100%;
-    background-color: #252A34;
+    background-color: #252a34;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -100,7 +103,7 @@ h1 {
 }
 
 #start {
-    background-color: #FF2E63;
+    background-color: #ff2e63;
 }
 
 #start-btn-div {
@@ -116,12 +119,13 @@ button {
     min-width: min-content;
 }
 
-.btn , .btn:visited{
-    border-color: #FF2E63;
+.btn,
+.btn:visited {
+    border-color: #ff2e63;
 }
 
 .dropdown-item {
-    color: #FF2E63;
+    color: #ff2e63;
 }
 
 #container {
@@ -132,74 +136,147 @@ button {
     justify-content: center;
 }
 
-#table{
+#table {
     width: 95%;
-    margin-top: 10px;
+    margin: 10px 0;
 }
 
 #credit {
     font-size: smaller;
     margin: 3px auto;
-    color: #252A34;
+    color: #252a34;
     text-align: center;
     text-overflow: ellipsis;
 }
 
-.btn:hover, #start:hover{
-    color: #252A34;
+.btn:hover,
+#start:hover {
+    color: #252a34;
     background-color: #ffffff;
-    border-color: #FF2E63;
+    border-color: #ff2e63;
 }
 
 #credit a {
-    color: #FF2E63;
+    color: #ff2e63;
     text-decoration: none;
     font-weight: 500;
 }
 
 td {
-    transition: background-color 0.1s linear;
-    background-color: #EAEAEA;
+    transition: background 1s;
+    background: radial-gradient(circle at center, #eaeaea 5%);
 }
 
 .empty {
-    border: 0.5px solid #FF2E63;
+    border: 0.5px solid #ff2e63;
 }
 
 .start {
-    border: 0.5px solid #FF2E63;
-    background-image: url('images/rocket.png');
+    border: 0.5px solid #ff2e63;
+    background-image: url("images/rocket.png");
     -webkit-user-drag: element;
     cursor: -webkit-grab;
     cursor: grab;
 }
 
 .target {
-    border: 0.5px solid #FF2E63;
-    background-image: url('images/target.png');
+    border: 0.5px solid #ff2e63;
+    background-image: url("images/target.png");
     -webkit-user-drag: element;
     cursor: -webkit-grab;
     cursor: grab;
 }
 
 .wall {
-    background-color: #252A34;
-    border: 0.5px solid #FF2E63;
+    animation-name: wallAnimation;
+    animation-duration: 0.1s;
+    animation-timing-function: ease-out;
+    animation-delay: 0;
+    animation-direction: alternate;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
+    border: 0.5px solid #ff2e63;
 }
 
 .weight {
-    background-color: #EAEAEA;
-    background-image: url('images/weight.png');
+    background-color: #eaeaea;
+    background-image: url("images/weight.png");
     background-size: cover;
-    border: 0.5px solid #FF2E63;
+    border: 0.5px solid #ff2e63;
 }
 
 .visited {
+    animation-name: visitingAnimation;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-out;
+    animation-delay: 0;
+    animation-direction: alternate;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
     background-color: #5bc0de;
-    border: 0.5px solid #FF2E63;
+    border: 0.5px solid #ff2e63;
+}
+
+.cur {
+    background-color: #ff2e63;
+    border: 0.5px solid #ff2e63;
 }
 
 .path {
-     background-color: #5cb85c;
-     border: 0.5px solid #FF2E63;
+    animation-name: pathAnimation;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-out;
+    animation-delay: 0;
+    animation-direction: alternate;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
+    background-color: #5cb85c;
+    border: 0.5px solid #ff2e63;
+}
+
+@keyframes wallAnimation {
+    0% {
+        transform: scale(0);
+        background-color: #252a34;
+    }
+    100% {
+        transform: scale(1);
+        background-color: #252a34;
+    }
+}
+@keyframes visitingAnimation {
+    0% {
+        transform: scale(0);
+        background-color: #160083bf;
+        border-radius: 100%;
+    }
+
+    50% {
+        background-color: #0f2db0bf;
+        border-radius: 50%;
+    }
+
+    75% {
+        background-color: #6b94dc;
+        border-radius: 25%;
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: #5bc0de;
+    }
+}
+
+@keyframes pathAnimation {
+    0% {
+        transform: scale(0);
+        background-color: #5cb85c;
+    }
+    100% {
+        transform: scale(1);
+        background-color: #5cb85c;
+    }
 }

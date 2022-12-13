@@ -68,6 +68,7 @@ h1 {
     display: flex;
     justify-items: center;
     align-items: center;
+    text-align: center;
 }
 
 .btn-check:focus + .btn-dark,
@@ -80,7 +81,7 @@ h1 {
 
 .legend-item div,
 .legend-item img {
-    margin: 0 20px;
+    margin: 0 5px;
     height: 25px;
     width: 25px;
     float: left;
@@ -149,12 +150,44 @@ button {
     text-overflow: ellipsis;
 }
 
-.btn:hover,
+.btn-dark:hover,
 #start:hover {
     color: #252a34;
     background-color: #ffffff;
     border-color: #ff2e63;
 }
+
+/* #tutorial-div {
+    width: 60%;
+    height: 70vh;
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background-color: #252a34;
+    border: 2px solid #ff2e63;
+    border-radius: 0.5rem;
+}
+
+#tutorial-div button {
+    background-color: #ff2e63;
+    width: max-content;
+}
+
+#controls {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+}
+
+#skip{
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+} */
 
 #credit a {
     color: #ff2e63;

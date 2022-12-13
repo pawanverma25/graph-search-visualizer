@@ -427,13 +427,13 @@ async function bfs(){
         }
         for (var i = 0; i < 4; i++) {
             var next = [cur[0] + dir[i], cur[1] + dir[i + 1]];
-            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] == 0 || Grid[next[0]][next[1]] == -2)) {
+            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && Grid[next[0]][next[1]] != Infinity && Math.abs(Grid[next[0]][next[1]]) != 1) {
                 q.enqueue(next);
                 await timeout();
                 setCell(next[0], next[1], "visited");
                 parents[next[0]][next[1]] = cur;
                 if (Grid[next[0]][next[1]] == -2) {
-                    await optimalPath(next);
+                    await optimalPath(next, -1);
                     return;
                 }
             }
@@ -510,12 +510,12 @@ async function bbfs(t){
         for (var i = 0; i < 4; i++) {
             var next = [cur[0] + dir[i], cur[1] + dir[i + 1]];
             if(found == true) return;
-            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] != Infinity &&  Grid[next[0]][next[1]] != 3-t)) {
+            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] != Infinity &&  Math.abs(Grid[next[0]][next[1]]) != 3-t)) {
                 q.enqueue(next);
                 if (Grid[next[0]][next[1]] == t || Grid[next[0]][next[1]] == -t) {
                     found = true;
-                    optimalPath(cur, -1);
-                    optimalPath(next, -2);
+                    optimalPath(cur, t-3);
+                    optimalPath(next, -t);
                     document.getElementById("clear-path").disabled = false;
                     return;
                 }

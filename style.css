@@ -51,8 +51,8 @@ h1 {
 }
 
 #collapse-button {
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     transition: transform 0.25s;
 }
 
@@ -174,6 +174,7 @@ td {
 .start {
     border: 0.5px solid #ff2e63;
     background-image: url("images/rocket.png");
+    background-color: #eaeaea;
     -webkit-user-drag: element;
     cursor: -webkit-grab;
     cursor: grab;
@@ -182,6 +183,7 @@ td {
 .target {
     border: 0.5px solid #ff2e63;
     background-image: url("images/target.png");
+    background-color: #eaeaea;
     -webkit-user-drag: element;
     cursor: -webkit-grab;
     cursor: grab;
@@ -215,7 +217,6 @@ td {
     animation-iteration-count: 1;
     animation-fill-mode: forwards;
     animation-play-state: running;
-    background-color: #5bc0de;
     border: 0.5px solid #ff2e63;
 }
 
@@ -234,6 +235,18 @@ td {
     animation-fill-mode: forwards;
     animation-play-state: running;
     background-color: #5cb85c;
+    border: 0.5px solid #ff2e63;
+}
+
+.visited2 {
+    animation-name: visitingAnimation2;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-out;
+    animation-delay: 0;
+    animation-direction: alternate;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
     border: 0.5px solid #ff2e63;
 }
 
@@ -267,6 +280,29 @@ td {
     100% {
         transform: scale(1);
         background-color: #5bc0de;
+    }
+}
+
+@keyframes visitingAnimation2 {
+    0% {
+        transform: scale(0);
+        background-color: #2a064abf;
+        border-radius: 100%;
+    }
+
+    50% {
+        background-color: #600b7cbf;
+        border-radius: 50%;
+    }
+
+    75% {
+        background-color: #7f2abc;
+        border-radius: 25%;
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: #d67af8;
     }
 }
 

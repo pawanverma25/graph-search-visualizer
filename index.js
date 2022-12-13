@@ -1,10 +1,4 @@
-window.onresize = function () {
-    row_count = Math.floor(container.clientHeight / cell_dimen);
-    col_count = Math.floor(container.clientWidth / cell_dimen);
-    Grid = new Array(row_count).fill().map(() => Array(col_count).fill(1));
-    (start = { x: 2, y: 2 }), (target = { x: row_count - 3, y: col_count - 3 });
-    generateGrid();
-};
+window.onresize = function () { location.reload()};
 const container = document.getElementById("container");
 const table = document.getElementById("table");
 const sizeInput = document.getElementById("cell-dimen");
@@ -12,7 +6,7 @@ const wallRadio = document.getElementById("wallRadio");
 const weightRadio = document.getElementById("weightRadio");
 const emptyRadio = document.getElementById("emptyRadio");
 
-const values = { wall: Infinity, weight: 10, empty: 1, start: -1, target: -2, visited: Infinity };
+const values = { wall: Infinity, weight: 10, empty: 0, start: -1, target: -2, visited: 1 , visited2 : 2 };
 
 class Queue {
     constructor() {
@@ -38,14 +32,37 @@ class Queue {
     }
 }
 
+class Stack {
+    constructor() {
+        this.elements = {};
+        this.top = 0;
+    }
+    push(element) {
+        this.elements[this.top] = element;
+        this.top++;
+    }
+    pop() {
+        const item = this.elements[this.top-1];
+        delete this.elements[this.top-1];
+        this.top--;
+        return item;
+    }
+    get length() {
+        return this.top - 0;
+    }
+    get isEmpty() {
+        return this.length === 0;
+    }
+}
+
 var cell_dimen = 40;
 var time = 0.001;
 var row_count = Math.floor(container.clientHeight / cell_dimen);
 var col_count = Math.floor(container.clientWidth / cell_dimen);
-let Grid = new Array(row_count).fill().map(() => Array(col_count).fill(1));
+let Grid = new Array(row_count).fill().map(() => Array(col_count).fill(0));
 let start = { x: 2, y: 2 },
     target = { x: row_count - 3, y: col_count - 3 };
-var being_dragged = 0;
+var being_dragged = 0, being_visualized = 0;
 //
 
 // some functions for readability
@@ -55,6 +72,7 @@ function setCell(x, y, type) {
     }
     Grid[x][y] = values[type];
     document.getElementById(`${x + "-" + y}`).setAttribute("class", `${type}`);
+    document.getElementById(`${x + "-" + y}`).style.backgroundColor = "";
 }
 function setCellEL(el, type) {
     var i = parseInt(el.getAttribute("id").split("-")[0]);
@@ -76,6 +94,7 @@ function setTerminals(x, y, type) {
     el.removeEventListener("click", cellClickToggler);
     removeEventListener("drop", dropListener);
     el.addEventListener("dragstart", terminalDragger);
+    el.style.backgroundColor = "";
 }
 
 function setTerminalsEl(el, type) {
@@ -89,6 +108,7 @@ async function timeout() {
 }
 
 function disableBtns(){
+    being_visualized = 1;
     document.getElementById("mazes").disabled = true;
     sizeInput.disabled = true;
     document.getElementById("start").disabled = true;
@@ -100,6 +120,7 @@ function disableBtns(){
 }
 
 function enableBtns(){
+    being_visualized = 0;
     document.getElementById("mazes").disabled = false;
     sizeInput.disabled = false;
     document.getElementById("start").disabled = false;
@@ -166,7 +187,7 @@ function generateGrid() {
         }
         table.appendChild(t_row);
     }
-    Grid = new Array(row_count).fill().map(() => Array(col_count).fill(1));
+    Grid = new Array(row_count).fill().map(() => Array(col_count).fill(0));
     setTerminals(start.x, start.y, "start");
     setTerminals(target.x, target.y, "target");
 }
@@ -191,6 +212,7 @@ document.getElementById("speed").addEventListener("input", (e) => {
 
 // clicks an other
 function paintBrushPopulator(e) {
+    if(being_visualized == 1) return;
     var x = parseInt(e.target.getAttribute("id").split("-")[0]);
     var y = parseInt(e.target.getAttribute("id").split("-")[1]);
     if (e.buttons == 1) {
@@ -200,6 +222,7 @@ function paintBrushPopulator(e) {
     }
 }
 function cellClickToggler(e) {
+    if(being_visualized == 1) return;
     var x = parseInt(e.target.getAttribute("id").split("-")[0]);
     var y = parseInt(e.target.getAttribute("id").split("-")[1]);
     if (wallRadio.checked == true) setCell(x, y, "wall");
@@ -208,30 +231,34 @@ function cellClickToggler(e) {
 }
 
 function terminalDragger(e) {
+    if(being_visualized == 1) return;
     if (e.target.classList[0] == "start") being_dragged = 1;
     else being_dragged = 2;
 }
 function dragEnterListener(e) {
+    if(being_visualized == 1) return;
     e.preventDefault();
     if (being_dragged == 1) e.target.style.borderColor = "#0275d8";
     else e.target.style.borderColor = "#d9534f";
     e.target.style.borderWidth = "3px";
 }
 function dragLeaveListener(e) {
+    if(being_visualized == 1) return;
     e.target.style.borderWidth = "0.5px";
     e.target.style.borderColor = "#FF2E63";
 }
 function dropListener(e) {
+    if(being_visualized == 1) return;
     e.preventDefault();
     if (being_dragged == 1) {
         if (e.target.getAttribute("id") != `${target.x + "-" + target.y}`) {
-            Grid[start.x][start.y] = 1;
+            Grid[start.x][start.y] = 0;
             setCell(start.x, start.y, "empty");
             setTerminalsEl(e.target, "start");
         }
     } else {
         if (e.target.getAttribute("id") != `${start.x + "-" + start.y}`) {
-            Grid[target.x][target.y] = 1;
+            Grid[target.x][target.y] = 0;
             setCell(target.x, target.y, "empty");
             setTerminalsEl(e.target, "target");
         }
@@ -241,8 +268,20 @@ function dropListener(e) {
 }
 //
 
-// clear board function
+// clear function
 document.getElementById("clear-board").addEventListener("click", generateGrid);
+document.getElementById("clear-path").addEventListener("click", ()=>{
+    for(var i = 0; i < row_count; i++){
+        for(var j = 0; j < col_count; j++){
+            if(Grid[i][j] != Infinity){
+                setCell(i, j, "empty");
+            }
+        }
+    }
+    setTerminals(start.x, start.y, "start");
+    setTerminals(target.x, target.y, "target");
+    enableBtns();
+});
 //
 
 // random populator
@@ -299,7 +338,7 @@ async function addInnerWalls(h, minj, maxj, mini, maxi) {
 }
 
 async function addInnerWallsH(minj, maxj, mini, maxi) {
-    if (maxi - mini < 3) {
+    if (maxi - mini < 4) {
         var y = Math.floor(randomNumber(minj, maxj) / 2) * 2;
         await addVWall(mini, maxi, y);
         await addInnerWalls(false, minj, y - 1, mini, maxi);
@@ -314,7 +353,7 @@ async function addInnerWallsH(minj, maxj, mini, maxi) {
 }
 
 async function addInnerWallsV(minj, maxj, mini, maxi) {
-    if (maxj - minj < 3) {
+    if (maxj - minj < 4) {
         var x = Math.floor(randomNumber(mini, maxi) / 2) * 2;
         await addHWall(minj, maxj, x);
         await addInnerWalls(true, minj, maxj, mini, x - 1);
@@ -371,48 +410,127 @@ document.getElementById("recursive-division-horizontal").addEventListener("click
 });
 
 const dir = [0, 1, 0, -1, 0];
-let parents;
-document.getElementById("bfs").addEventListener("click", async () => {
-    disableBtns();
-    parents = new Array(row_count+1).fill().map(() => Array(col_count+1).fill(-1));
+var parents;
+
+async function bfs(){
+    parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
     var q = new Queue();
     q.enqueue([start.x, start.y]);
-
     await timeout();
     setCell(start.x, start.y, "visited");
     let cur;
     while (!q.isEmpty) {
         cur = q.dequeue();
-        if (Grid[cur[0]][cur[1]] == -2) {
-            await optimalPath(cur);
-            return;
-        }
-        if (Grid[cur[0]][cur[1]] != Infinity) {
+        if (Grid[cur[0]][cur[1]] != 0) {
             await timeout();
             setCell(cur[0], cur[1], "visited");
-            enableBtns();
         }
         for (var i = 0; i < 4; i++) {
             var next = [cur[0] + dir[i], cur[1] + dir[i + 1]];
-            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] == 1 || Grid[next[0]][next[1]] == -2)) {
+            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] == 0 || Grid[next[0]][next[1]] == -2)) {
                 q.enqueue(next);
                 await timeout();
                 setCell(next[0], next[1], "visited");
                 parents[next[0]][next[1]] = cur;
+                if (Grid[next[0]][next[1]] == -2) {
+                    await optimalPath(next);
+                    return;
+                }
             }
         }
     }
-    enableBtns();
+}
+document.getElementById("bfs").addEventListener("click", async () => {
+    disableBtns();
+    await bfs();
+    document.getElementById("clear-path").disabled = false;
 });
 
-async function optimalPath(cur) {
+async function optimalPath(cur, t) {
     document.getElementById(`${cur[0] + "-" + cur[1]}`).style.backgroundColor = "#5cb85c";
-    while (Grid[cur[0]][cur[1]] != -1) {
+    while (cur != -1 && Grid[cur[0]][cur[1]] != t) {
         await timeout();
         setCell(cur[0], cur[1], "path");
-        console.log(parents, cur);
         cur = parents[cur[0]][cur[1]];
     }
-    await timeout();
-    document.getElementById(`${cur[0] + "-" + cur[1]}`).style.backgroundColor = "#5cb85c";
+    if(cur != -1) document.getElementById(`${cur[0] + "-" + cur[1]}`).style.backgroundColor = "#5cb85c";
 }
+
+var found;
+async function dfs(cur){
+    if(found == true) return;
+    if (Grid[cur[0]][cur[1]] != 1) {
+        await timeout();
+        setCell(cur[0], cur[1], "visited");
+    }
+    if (Grid[cur[0]][cur[1]] == -2) {
+        await optimalPath(cur, -1);
+        document.getElementById("clear-path").disabled = false;
+        found = true;
+        return;
+    }
+    for (var i = 0; i < 4; i++) {
+        var next = [cur[0] + dir[i], cur[1] + dir[i + 1]];
+        if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] == 0 || Grid[next[0]][next[1]] == -2)) {
+            parents[next[0]][next[1]] = cur;
+            await dfs(next);
+        }
+    }
+}
+document.getElementById("dfs").addEventListener("click", async ()=>{
+    found = false;
+    parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
+    disableBtns();
+    await dfs([start.x, start.y]);
+    document.getElementById("clear-path").disabled = false;
+});
+
+
+async function bbfs(t){
+    var type, q = new Queue();
+    if(t == 1) {
+        type = "visited2";
+        q.enqueue([target.x, target.y]);
+    }
+    else {
+        type = "visited";
+        q.enqueue([start.x, start.y]);
+    }
+
+    
+    await timeout();
+    setCell(start.x, start.y, type);
+    
+    while (!q.isEmpty) {
+        var cur = q.dequeue();
+        if (Grid[cur[0]][cur[1]] != 0) {
+            await timeout();
+            setCell(cur[0], cur[1], type);
+        }
+        for (var i = 0; i < 4; i++) {
+            var next = [cur[0] + dir[i], cur[1] + dir[i + 1]];
+            if(found == true) return;
+            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] != Infinity &&  Grid[next[0]][next[1]] != 3-t)) {
+                q.enqueue(next);
+                if (Grid[next[0]][next[1]] == t || Grid[next[0]][next[1]] == -t) {
+                    found = true;
+                    optimalPath(cur, -1);
+                    optimalPath(next, -2);
+                    document.getElementById("clear-path").disabled = false;
+                    return;
+                }
+                await timeout();
+                setCell(next[0], next[1], type);
+                parents[next[0]][next[1]] = cur;
+            }
+        }
+    }
+    document.getElementById("clear-path").disabled = false;
+}
+document.getElementById("bbfs").addEventListener("click", () => {
+    found = false;
+    disableBtns();
+    parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
+    bbfs(1);
+    bbfs(2);
+});

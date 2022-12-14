@@ -183,6 +183,7 @@ function generateGrid() {
             t_cell.classList.add("empty");
             t_cell.setAttribute("id", `${i + "-" + j}`);
             t_cell.addEventListener("mouseover", paintBrushPopulator);
+            t_cell.addEventListener("touchmove", touchPopulator);
             t_cell.addEventListener("click", cellClickToggler);
             t_cell.addEventListener("dragenter", dragEnterListener);
             t_cell.addEventListener("dragleave", dragLeaveListener);
@@ -217,15 +218,24 @@ document.getElementById("speed").addEventListener("input", (e) => {
 });
 //
 
-// clicks an other
+// clicks and touches
+function touchPopulator(e){
+    if(being_visualized == 1) return;
+    var touch = e.touches[0];
+    var el = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (el && el != table && el.nodeName == "TD") {
+        if (wallRadio.checked == true) setCellEL(el, "wall");
+        else if (weightRadio.checked == true) setCellEL(el, "weight");
+        else setCellEL(el, "empty");
+    }
+}
+
 function paintBrushPopulator(e) {
     if(being_visualized == 1) return;
-    var x = parseInt(e.target.getAttribute("id").split("-")[0]);
-    var y = parseInt(e.target.getAttribute("id").split("-")[1]);
     if (e.buttons == 1) {
-        if (wallRadio.checked == true) setCell(x, y, "wall");
-        else if (weightRadio.checked == true) setCell(x, y, "weight");
-        else setCell(x, y, "empty");
+        if (wallRadio.checked == true) setCellEL(e.target, "wall");
+        else if (weightRadio.checked == true) setCellEL(e.target, "weight");
+        else setCellEL(e.target, "empty");
     }
 }
 function cellClickToggler(e) {

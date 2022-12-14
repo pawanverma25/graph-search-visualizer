@@ -29,6 +29,11 @@ h1 {
     text-align: left;
 }
 
+hr {
+    background-color: #ff2e63;
+    height: 2px;
+}
+
 #container img {
     margin: 0;
     padding: 0;
@@ -57,7 +62,7 @@ h1 {
 }
 
 #collapse-a {
-    margin: auto 1px;
+    margin: auto 3px;
     display: flex;
     align-items: center;
 }
@@ -343,5 +348,11 @@ td {
     100% {
         transform: scale(1);
         background-color: #5cb85c;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    #container {
+        height: 71.5vh;
     }
 }

@@ -253,8 +253,16 @@ td {
     border: 0.5px solid #ff2e63;
 }
 
-.cur {
-    background-color: #ff2e63;
+
+.visited2 {
+    animation-name: visitingAnimation2;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-out;
+    animation-delay: 0;
+    animation-direction: alternate;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
     border: 0.5px solid #ff2e63;
 }
 
@@ -268,18 +276,6 @@ td {
     animation-fill-mode: forwards;
     animation-play-state: running;
     background-color: #5cb85c;
-    border: 0.5px solid #ff2e63;
-}
-
-.visited2 {
-    animation-name: visitingAnimation2;
-    animation-duration: 0.5s;
-    animation-timing-function: ease-out;
-    animation-delay: 0;
-    animation-direction: alternate;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-    animation-play-state: running;
     border: 0.5px solid #ff2e63;
 }
 

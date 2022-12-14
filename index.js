@@ -74,6 +74,13 @@ function setCell(x, y, type) {
     document.getElementById(`${x + "-" + y}`).setAttribute("class", `${type}`);
     document.getElementById(`${x + "-" + y}`).style.backgroundColor = "";
 }
+
+function visitCell(x, y, type){
+    visited[x][y] = values[type];
+    document.getElementById(`${x + "-" + y}`).classList.add(`${type}`);
+    document.getElementById(`${x + "-" + y}`).style.backgroundColor = "";
+}
+
 function setCellEL(el, type) {
     var i = parseInt(el.getAttribute("id").split("-")[0]);
     var j = parseInt(el.getAttribute("id").split("-")[1]);
@@ -273,7 +280,10 @@ document.getElementById("clear-board").addEventListener("click", generateGrid);
 document.getElementById("clear-path").addEventListener("click", ()=>{
     for(var i = 0; i < row_count; i++){
         for(var j = 0; j < col_count; j++){
-            if(Grid[i][j] != Infinity){
+            if(Grid[i][j] == 10){
+                setCell(i, j, "weight");
+            }
+            else if(Grid[i][j] != Infinity){
                 setCell(i, j, "empty");
             }
         }
@@ -410,27 +420,28 @@ document.getElementById("recursive-division-horizontal").addEventListener("click
 });
 
 const dir = [0, 1, 0, -1, 0];
-var parents;
+var parents, visited;
 
 async function bfs(){
     parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
+    visited = new Array(row_count).fill().map(() => Array(col_count).fill(0));
     var q = new Queue();
     q.enqueue([start.x, start.y]);
     await timeout();
-    setCell(start.x, start.y, "visited");
+    visitCell(start.x, start.y, "visited");
     let cur;
     while (!q.isEmpty) {
         cur = q.dequeue();
         if (Grid[cur[0]][cur[1]] != 0) {
             await timeout();
-            setCell(cur[0], cur[1], "visited");
+            visitCell(cur[0], cur[1], "visited");
         }
         for (var i = 0; i < 4; i++) {
             var next = [cur[0] + dir[i], cur[1] + dir[i + 1]];
-            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && Grid[next[0]][next[1]] != Infinity && Math.abs(Grid[next[0]][next[1]]) != 1) {
+            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && Grid[next[0]][next[1]] != Infinity && visited[next[0]][next[1]] != 1) {
                 q.enqueue(next);
                 await timeout();
-                setCell(next[0], next[1], "visited");
+                visitCell(next[0], next[1], "visited");
                 parents[next[0]][next[1]] = cur;
                 if (Grid[next[0]][next[1]] == -2) {
                     await optimalPath(next, -1);
@@ -447,21 +458,21 @@ document.getElementById("bfs").addEventListener("click", async () => {
 });
 
 async function optimalPath(cur, t) {
-    document.getElementById(`${cur[0] + "-" + cur[1]}`).style.backgroundColor = "#5cb85c";
+    document.getElementById(`${cur[0] + "-" + cur[1]}`).classList.add("path");
     while (cur != -1 && Grid[cur[0]][cur[1]] != t) {
         await timeout();
-        setCell(cur[0], cur[1], "path");
+        document.getElementById(`${cur[0] + "-" + cur[1]}`).classList.add("path");
         cur = parents[cur[0]][cur[1]];
     }
-    if(cur != -1) document.getElementById(`${cur[0] + "-" + cur[1]}`).style.backgroundColor = "#5cb85c";
+    if(cur != -1) document.getElementById(`${cur[0] + "-" + cur[1]}`).classList.add("path");
 }
 
 var found;
 async function dfs(cur){
     if(found == true) return;
-    if (Grid[cur[0]][cur[1]] != 1) {
+    if (visited[cur[0]][cur[1]] != 1) {
         await timeout();
-        setCell(cur[0], cur[1], "visited");
+        visitCell(cur[0], cur[1], "visited");
     }
     if (Grid[cur[0]][cur[1]] == -2) {
         await optimalPath(cur, -1);
@@ -471,7 +482,7 @@ async function dfs(cur){
     }
     for (var i = 0; i < 4; i++) {
         var next = [cur[0] + dir[i], cur[1] + dir[i + 1]];
-        if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] == 0 || Grid[next[0]][next[1]] == -2)) {
+        if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && Grid[next[0]][next[1]] != Infinity && visited[next[0]][next[1]] != 1) {
             parents[next[0]][next[1]] = cur;
             await dfs(next);
         }
@@ -480,6 +491,7 @@ async function dfs(cur){
 document.getElementById("dfs").addEventListener("click", async ()=>{
     found = false;
     parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
+    visited = new Array(row_count).fill().map(() => Array(col_count).fill(0));
     disableBtns();
     await dfs([start.x, start.y]);
     document.getElementById("clear-path").disabled = false;
@@ -496,23 +508,18 @@ async function bbfs(t){
         type = "visited";
         q.enqueue([start.x, start.y]);
     }
-
-    
-    await timeout();
-    setCell(start.x, start.y, type);
-    
     while (!q.isEmpty) {
         var cur = q.dequeue();
-        if (Grid[cur[0]][cur[1]] != 0) {
+        if (visited[cur[0]][cur[1]] != 0) {
             await timeout();
-            setCell(cur[0], cur[1], type);
+            visitCell(cur[0], cur[1], type);
         }
         for (var i = 0; i < 4; i++) {
             var next = [cur[0] + dir[i], cur[1] + dir[i + 1]];
             if(found == true) return;
-            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] != Infinity &&  Math.abs(Grid[next[0]][next[1]]) != 3-t)) {
+            if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && (Grid[next[0]][next[1]] != Infinity &&  visited[next[0]][next[1]] != 3-t)) {
                 q.enqueue(next);
-                if (Grid[next[0]][next[1]] == t || Grid[next[0]][next[1]] == -t) {
+                if (visited[next[0]][next[1]] == t || Grid[next[0]][next[1]] == -t) {
                     found = true;
                     optimalPath(cur, t-3);
                     optimalPath(next, -t);
@@ -520,7 +527,7 @@ async function bbfs(t){
                     return;
                 }
                 await timeout();
-                setCell(next[0], next[1], type);
+                visitCell(next[0], next[1], type);
                 parents[next[0]][next[1]] = cur;
             }
         }
@@ -528,9 +535,11 @@ async function bbfs(t){
     document.getElementById("clear-path").disabled = false;
 }
 document.getElementById("bbfs").addEventListener("click", () => {
+     
     found = false;
     disableBtns();
     parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
+    visited = new Array(row_count).fill().map(() => Array(col_count).fill(0));
     bbfs(1);
     bbfs(2);
 });

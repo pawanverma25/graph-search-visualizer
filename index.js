@@ -6,7 +6,7 @@ const wallRadio = document.getElementById("wallRadio");
 const weightRadio = document.getElementById("weightRadio");
 const emptyRadio = document.getElementById("emptyRadio");
 
-const values = { wall: Infinity, weight: 10, empty: 0, start: -1, target: -2, visited: 1 , visited2 : 2 };
+const values = { "wall": Infinity, "weight": 20, "empty": 0, "start": -1, "target": -2, "visited": 1 , "visited2" : 2 };
 
 class Queue {
     constructor() {
@@ -63,6 +63,8 @@ let Grid = new Array(row_count).fill().map(() => Array(col_count).fill(0));
 let start = { x: 2, y: 2 },
     target = { x: row_count - 3, y: col_count - 3 };
 var being_dragged = 0, being_visualized = 0;
+const dir = [0, 1, 0, -1, 0];
+var parents, visited;
 //
 
 // some functions for readability
@@ -70,13 +72,13 @@ function setCell(x, y, type) {
     if (Grid[x][y] == -1 || Grid[x][y] == -2) {
         return;
     }
-    Grid[x][y] = values[type];
+    Grid[x][y] = values[`${type}`];
     document.getElementById(`${x + "-" + y}`).setAttribute("class", `${type}`);
     document.getElementById(`${x + "-" + y}`).style.backgroundColor = "";
 }
 
 function visitCell(x, y, type){
-    visited[x][y] = values[type];
+    visited[x][y] = values[`${type}`];
     document.getElementById(`${x + "-" + y}`).classList.add(`${type}`);
     document.getElementById(`${x + "-" + y}`).style.backgroundColor = "";
 }
@@ -290,7 +292,7 @@ document.getElementById("clear-board").addEventListener("click", generateGrid);
 document.getElementById("clear-path").addEventListener("click", ()=>{
     for(var i = 0; i < row_count; i++){
         for(var j = 0; j < col_count; j++){
-            if(Grid[i][j] == 10){
+            if(Grid[i][j] == 20){
                 setCell(i, j, "weight");
             }
             else if(Grid[i][j] != Infinity){
@@ -314,7 +316,7 @@ function randomPopulator(e) {
     for (var i = 0; i < row_count; i++) {
         for (var j = 0; j < col_count; j++) {
             if (Grid[i][j] == -1 || Grid[i][j] == -2) continue;
-            var r = 0.3 - Math.random();
+            var r = 0.5 - Math.random();
             if (r > 0) setCell(i, j, type);
             else setCell(i, j, "empty");
         }
@@ -428,9 +430,6 @@ document.getElementById("recursive-division-horizontal").addEventListener("click
     await addInnerWallsH(1, col_count - 2, 1, row_count - 2);
     enableBtns();
 });
-
-const dir = [0, 1, 0, -1, 0];
-var parents, visited;
 
 async function bfs(){
     parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
@@ -552,4 +551,123 @@ document.getElementById("bbfs").addEventListener("click", () => {
     visited = new Array(row_count).fill().map(() => Array(col_count).fill(0));
     bbfs(1);
     bbfs(2);
+});
+
+///////// weighed algorithms
+var Graph, distance;
+function generateAdjGraph(){
+    Graph = [];
+    for(var i = 0; i < row_count; i++){
+        var row = [];
+        for(var j = 0; j < col_count; j++){
+            var neighbours = [];
+            for (var k = 0; k < 4; k++) {                
+                var next = [i + dir[k], j + dir[k+1]], value;
+                if (next[0] >= 0 && next[1] >= 0 && next[0] < row_count && next[1] < col_count && Grid[next[0]][next[1]] != Infinity){
+                    if(Grid[next[0]][next[1]] == 20) value = 20;
+                    else value = 1;
+                    neighbours.push([value, next]);
+                }
+            }
+            row.push(neighbours);
+        }
+        Graph.push(row);
+    }
+}
+
+
+class PriorityQueue{
+    constructor(){
+        this.values = []
+    }
+    swap(index1, index2){
+        var temp = this.values[index1];
+        this.values[index1] = this.values[index2];
+        this.values[index2] = temp;
+        return this.values;
+    }
+    heapifyUp(){
+        var index = this.values.length - 1;
+        while(index > 0){
+            let parent = Math.floor((index - 1)/2);
+            if(this.values[parent][0] > this.values[index][0]){
+                this.swap(index, parent);
+                index = parent;
+            } else{
+                break;
+            }
+        }
+    }
+    
+    push(value){
+        this.values.push(value)
+        this.heapifyUp();
+    }
+
+    heapifyDown(){
+        var parent = 0;
+        const length = this.values.length;
+        while (true){
+            let left = 2*parent + 1;
+            let right = 2*parent + 2;
+            let swap = null;      
+            if (left < length && this.values[left][0] < this.values[parent][0]) swap = left;
+            if (right < length && ((swap === null && this.values[right][0] < this.values[parent][0]) || (swap !== null && this.values[right][0] < this.values[left][0]))) swap = right;
+            if (swap === null) break;
+            this.swap(parent, swap);
+            parent = swap;
+        }
+    }
+
+    pop(){
+        this.swap(0, this.values.length - 1);
+        var poppedNode = this.values.pop();
+        if(this.values.length > 1){
+            this.heapifyDown();
+        }
+        return poppedNode;
+    }
+}
+
+// async function visualizeDijstras(){
+//     var distancePQ = new PriorityQueue();
+//     for(var i = 0; i < row_count; i++){
+//         for(var j = 0; j < col_count; j++){
+//             distancePQ.push([distance[i][j], [i, j]]);
+//         }
+//     }
+//     while(distancePQ.values.length > 0){
+//         var cur = distancePQ.pop();
+//         if(Grid[cur[1][0]][cur[1][1]] == -2) return; 
+//         await timeout();
+//         document.getElementById(`${cur[1][0] + "-" + cur[1][1]}`).classList.add("visited");
+//         document.getElementById(`${cur[1][0] + "-" + cur[1][1]}`).style.backgroundColor = "";
+//     }
+// }
+
+document.getElementById("dijkstras").addEventListener("click", async ()=> {
+    disableBtns();
+    generateAdjGraph();
+    
+    parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
+    distance = new Array(row_count).fill().map(() => Array(col_count).fill(100000));
+    var pq = new PriorityQueue();
+    pq.push([0, [start.x, start.y]]);
+    distance[start.x][start.y] = 0;
+    while(pq.values.length > 0){
+        var cur = pq.pop();
+        await timeout();
+        document.getElementById(`${cur[1][0] + "-" + cur[1][1]}`).classList.add("visited");
+        document.getElementById(`${cur[1][0] + "-" + cur[1][1]}`).style.backgroundColor = "";
+        if(Grid[cur[1][0]][cur[1][1]] == -2) break; 
+        Graph[cur[1][0]][cur[1][1]].forEach(neighbour => {
+            if(neighbour[0] + cur[0] < distance[neighbour[1][0]][neighbour[1][1]]){
+                distance[neighbour[1][0]][neighbour[1][1]] = neighbour[0] + cur[0];
+                pq.push([neighbour[0] + cur[0], neighbour[1]]);
+                parents[neighbour[1][0]][neighbour[1][1]] = cur[1];
+            }
+        });
+    }
+    await optimalPath([target.x, target.y], -1);
+    document.getElementById("clear-path").disabled = false;
 });

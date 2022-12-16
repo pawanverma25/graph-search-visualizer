@@ -154,7 +154,7 @@ function shuffle(arr) {
 }
 
 function randomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    return Math.floor(Math.random() * (max - min) + min) + 1;
 }
 
 //
@@ -411,7 +411,7 @@ document.getElementById("recursive-division").addEventListener("click", async ()
     disableBtns();
     generateGrid();
     await addOuterWalls();
-    await addInnerWalls(Math.random() > 0.5, 1, col_count - 2, 1, row_count - 2);
+    await addInnerWalls(false, 1, col_count - 2, 1, row_count - 2);
     enableBtns();
 });
 
@@ -464,6 +464,7 @@ document.getElementById("bfs").addEventListener("click", async () => {
     disableBtns();
     await bfs();
     document.getElementById("clear-path").disabled = false;
+    document.getElementById("clear-board").disabled = false;
 });
 
 async function optimalPath(cur, t) {
@@ -504,6 +505,7 @@ document.getElementById("dfs").addEventListener("click", async ()=>{
     disableBtns();
     await dfs([start.x, start.y]);
     document.getElementById("clear-path").disabled = false;
+    document.getElementById("clear-board").disabled = false;
 });
 
 
@@ -533,6 +535,7 @@ async function bbfs(t){
                     optimalPath(cur, t-3);
                     optimalPath(next, -t);
                     document.getElementById("clear-path").disabled = false;
+                    document.getElementById("clear-board").disabled = false;
                     return;
                 }
                 await timeout();
@@ -542,6 +545,7 @@ async function bbfs(t){
         }
     }
     document.getElementById("clear-path").disabled = false;
+    document.getElementById("clear-board").disabled = false;
 }
 document.getElementById("bbfs").addEventListener("click", () => {
      
@@ -629,28 +633,12 @@ class PriorityQueue{
     }
 }
 
-// async function visualizeDijstras(){
-//     var distancePQ = new PriorityQueue();
-//     for(var i = 0; i < row_count; i++){
-//         for(var j = 0; j < col_count; j++){
-//             distancePQ.push([distance[i][j], [i, j]]);
-//         }
-//     }
-//     while(distancePQ.values.length > 0){
-//         var cur = distancePQ.pop();
-//         if(Grid[cur[1][0]][cur[1][1]] == -2) return; 
-//         await timeout();
-//         document.getElementById(`${cur[1][0] + "-" + cur[1][1]}`).classList.add("visited");
-//         document.getElementById(`${cur[1][0] + "-" + cur[1][1]}`).style.backgroundColor = "";
-//     }
-// }
-
 document.getElementById("dijkstras").addEventListener("click", async ()=> {
     disableBtns();
     generateAdjGraph();
     
     parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
-    distance = new Array(row_count).fill().map(() => Array(col_count).fill(100000));
+    distance = new Array(row_count).fill().map(() => Array(col_count).fill(Infinity));
     var pq = new PriorityQueue();
     pq.push([0, [start.x, start.y]]);
     distance[start.x][start.y] = 0;
@@ -670,4 +658,68 @@ document.getElementById("dijkstras").addEventListener("click", async ()=> {
     }
     await optimalPath([target.x, target.y], -1);
     document.getElementById("clear-path").disabled = false;
+    document.getElementById("clear-board").disabled = false;
+});
+
+function manhattanDistance(x, y){
+    return Math.abs(target.x - x) + Math.abs(target.y - y);
+}
+
+function removeFromQueue(el, q){
+    for (let i = 0; i < q.length; i += 1) {
+        if (el == q[i][1]) {
+          q = q.splice(i, 1);
+          break;
+        }
+    }
+}
+
+document.getElementById("a-star").addEventListener("click", async () => {
+    disableBtns();
+    generateAdjGraph();
+    parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
+    visited = new Array(row_count).fill().map(() => Array(col_count).fill(0));
+    distance = new Array(row_count).fill().map(() => Array(col_count).fill(Infinity));
+    var f = new Array(row_count).fill().map(() => Array(col_count).fill(Infinity));
+
+    var unVisited = [];
+    unVisited.push([manhattanDistance(start.x, start.y) , [start.x, start.y]]);
+
+    distance[start.x][start.y] = 0;
+    f[start.x][start.y] = manhattanDistance(start.x, start.y);
+
+    await timeout();
+    visitCell(start.x, start.y, "visited");
+
+    while(unVisited.length > 0){
+        unVisited.sort((a, b) => {
+            if (f[a[1][0]][a[1][1]] === f[b[1][0]][b[1][1]]) {
+              return distance[b[1][0]][b[1][1]] - distance[a[1][0]][a[1][1]];
+            }
+            return f[a[1][0]][a[1][1]] - f[b[1][0]][b[1][1]];
+          });
+        var cur = unVisited.shift();
+
+        await timeout();
+        visitCell(cur[1][0], cur[1][1], "visited");
+
+        if(Grid[cur[1][0]][cur[1][1]] == -2 || distance[cur[1][0]][cur[1][1]] == Infinity) break;
+
+        Graph[cur[1][0]][cur[1][1]].forEach(neighbour => {
+            var distanceToNeighbor = distance[cur[1][0]][cur[1][1]] + neighbour[0];
+            if(distanceToNeighbor < distance[neighbour[1][0]][neighbour[1][1]]){
+                removeFromQueue(neighbour[1], unVisited);
+                parents[neighbour[1][0]][neighbour[1][1]] = cur[1];
+
+                distance[neighbour[1][0]][neighbour[1][1]] = distanceToNeighbor;
+                f[neighbour[1][0]][neighbour[1][1]] = distance[neighbour[1][0]][neighbour[1][1]] + manhattanDistance(neighbour[1][0], neighbour[1][1]);
+
+                unVisited.push([f[neighbour[1][0]][neighbour[1][1]], neighbour[1]]);
+
+            }
+        });
+    }
+    await optimalPath([target.x, target.y], -1);
+    document.getElementById("clear-path").disabled = false;
+    document.getElementById("clear-board").disabled = false;
 });

@@ -29,7 +29,7 @@ h1 {
     text-align: left;
 }
 
-hr {
+hr:not([size]) {
     background-color: #ff2e63;
     height: 2px;
 }

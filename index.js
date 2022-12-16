@@ -60,8 +60,8 @@ var time = 0.001;
 var row_count = Math.floor(container.clientHeight / cell_dimen);
 var col_count = Math.floor(container.clientWidth / cell_dimen);
 let Grid = new Array(row_count).fill().map(() => Array(col_count).fill(0));
-let start = { x: 2, y: 2 },
-    target = { x: row_count - 3, y: col_count - 3 };
+let start = { x: 1, y: 1 },
+    target = { x: row_count - 2, y: col_count - 2 };
 var being_dragged = 0, being_visualized = 0;
 const dir = [0, 1, 0, -1, 0];
 var parents, visited;
@@ -209,7 +209,7 @@ sizeInput.addEventListener("input", () => {
     cell_dimen = sizeInput.value;
     row_count = Math.floor(container.clientHeight / cell_dimen);
     col_count = Math.floor(container.clientWidth / cell_dimen);
-    (start = { x: 2, y: 2 }), (target = { x: row_count - 3, y: col_count - 3 });
+    (start = { x: 1, y: 1 }), (target = { x: row_count - 2, y: col_count - 2 });
     generateGrid();
 });
 //
@@ -431,6 +431,60 @@ document.getElementById("recursive-division-horizontal").addEventListener("click
     enableBtns();
 });
 
+ async function removeWall (i, j, k){
+    if (k && Grid[i][j+1]) {
+        await timeout();
+        setCell(i, j+1, "empty");
+    } else if (!k && Grid[i + 1]) {
+        await timeout();
+        setCell(i+1, j, "empty");
+    } else {
+        await timeout();
+        setCell(i, j, "empty");
+    }
+}
+
+document.getElementById("binary-tree").addEventListener("click", async ()=>{
+    disableBtns();
+    generateGrid();
+    for(var i = 0; i < row_count; i++){
+        for(var j = 0; j < col_count; j++){
+            if (i == row_count-1 || j == col_count-1 || i == 0 || j == 0) {
+                if(Grid[i][j] != -1 && Grid[i][j] != -2){
+                    // await timeout();
+                    setCell(i, j, "wall");
+                }
+            }
+            else if(i%2 == 0 || j%2 == 0){
+                if(i == row_count-2 || j == col_count-2) continue;
+                if(Grid[i][j] != -1 && Grid[i][j] != -2){
+                    // await timeout();
+                    setCell(i, j, "wall");
+                }
+            }
+        }
+    }
+    for(var i = 1; i < row_count-1; i+=2){
+        for(var j = 1; j < col_count-1; j+=2){
+            if(i == row_count - 2 && j == col_count - 2){
+                continue;
+            }
+            else if(i == row_count - 2){
+                await removeWall(i, j, 1);
+            } 
+            else if (j == col_count - 2){
+                await removeWall(i, j, 0);
+            }
+            else {
+                await removeWall(i, j, randomNumber(-1, 1));
+            }
+        }
+    }  
+    enableBtns();
+});
+
+
+/// Path Finder AlgorithmsS
 async function bfs(){
     parents = new Array(row_count).fill().map(() => Array(col_count).fill(-1));
     visited = new Array(row_count).fill().map(() => Array(col_count).fill(0));

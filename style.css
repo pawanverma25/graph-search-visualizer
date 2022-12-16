@@ -1,13 +1,12 @@
 * {
     box-sizing: border-box;
+    margin: 0;
 }
 
 body {
-    margin: 0;
     color: #ffff;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background-color: #eaeaea;
-    text-align: center;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -18,8 +17,12 @@ body {
     scrollbar-width: none;
 }
 
-body::-webkit-scrollbar {
+body::-webkit-scrollbar,  #tutorial-div::-webkit-scrollbar {
     display: none;
+}
+
+p {
+    margin: 0;
 }
 
 h1 {
@@ -27,6 +30,7 @@ h1 {
     font-weight: 700;
     padding: 0;
     text-align: left;
+    margin: 0;
 }
 
 hr:not([size]) {
@@ -65,6 +69,7 @@ hr:not([size]) {
     margin: auto 3px;
     display: flex;
     align-items: center;
+    cursor: pointer;
 }
 
 .legend-item {
@@ -98,11 +103,20 @@ hr:not([size]) {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    cursor: pointer;
+}
+
+#headd img {
+    width: 20px;
+}
+
+#headd:hover {
+    text-decoration: underline;
 }
 
 .head-item {
     flex: 1;
-    padding: 1%;
+    padding: .7%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -134,9 +148,17 @@ button {
     color: #ff2e63;
 }
 
+.dropdown-info{
+    font-size: 0.8rem;
+    text-align: center;
+    margin: 0;
+    color: #ff2e63;
+}
+
 #container {
     width: 100%;
-    height: 85vh;
+    height: 80vh;
+    margin: 30px 0 10px;
     display: flex;
     align-content: center;
     justify-content: center;
@@ -144,12 +166,10 @@ button {
 
 #table {
     width: 95%;
-    margin: 10px 0;
 }
 
 #credit {
     font-size: smaller;
-    margin: 3px auto;
     color: #252a34;
     text-align: center;
     text-overflow: ellipsis;
@@ -162,37 +182,93 @@ button {
     border-color: #ff2e63;
 }
 
-/* #tutorial-div {
-    width: 60%;
-    height: 70vh;
+#tutorial-div {
+    width: 600px;
+    height: 80vh;
     z-index: 10;
-    position: absolute;
+    position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     margin: auto;
-    background-color: #252a34;
+    background-color: #eaeaea;
+    color: #252a34;
     border: 2px solid #ff2e63;
+    box-shadow: 0 0 10px #ff2e63;
     border-radius: 0.5rem;
+    padding: 2%;
+    overflow: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    display: none;
 }
 
-#tutorial-div button {
-    background-color: #ff2e63;
-    width: max-content;
+#remove {
+    width: 20px;
+    position: sticky;
+    top: 0%;
+    left: 100%;
 }
 
-#controls {
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
+#tut-h {
+    color: #ff2e63;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
 }
 
-#skip{
-    position: absolute;
-    left: 20px;
-    bottom: 20px;
-} */
+#tut-h img {
+    width: 60px;
+    height: 60px;
+    margin: 10px;
+}
+
+#tut-h h1 {
+    margin: 10px;
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+#instructions-div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.instruction {
+    flex: 1;
+    display: flex;
+    margin: 10px;
+}
+
+.step {
+    flex: auto;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.instruction-text {
+    flex: 10;
+}
+
+#blur-bg {
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    z-index: 5;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    width: 100%;
+    display: none;
+}
 
 #credit a {
     color: #ff2e63;
@@ -203,6 +279,8 @@ button {
 td {
     transition: background 1s;
     background: radial-gradient(circle at center, #eaeaea 5%);
+    background-repeat: no-repeat;
+    background-position: 0%;
 }
 
 .empty {
@@ -313,7 +391,7 @@ td {
 
     100% {
         transform: scale(1);
-        background-color: #5bc0de;
+        background-color: #08D9D6;
     }
 }
 
@@ -336,7 +414,7 @@ td {
 
     100% {
         transform: scale(1);
-        background-color: #d67af8;
+        background-color: #f67af8;
     }
 }
 
@@ -354,5 +432,9 @@ td {
 @media screen and (max-width: 600px) {
     #container {
         height: 71.5vh;
+    }
+    #tutorial-div{
+        width: 90%;
+        font-size: 1rem;
     }
 }

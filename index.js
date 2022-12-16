@@ -55,10 +55,12 @@ class Stack {
     }
 }
 
-var cell_dimen = 40;
+var cell_dimen = 24;
 var time = 0.001;
 var row_count = Math.floor(container.clientHeight / cell_dimen);
 var col_count = Math.floor(container.clientWidth / cell_dimen);
+if(row_count%2 == 0) row_count++;
+if(col_count%2 == 0) col_count++;
 let Grid = new Array(row_count).fill().map(() => Array(col_count).fill(0));
 let start = { x: 1, y: 1 },
     target = { x: row_count - 2, y: col_count - 2 };
@@ -140,23 +142,9 @@ function enableBtns(){
     document.getElementById("clear-board").disabled = false;
 }
 
-function shuffle(arr) {
-    var j,
-        x,
-        i = arr.length;
-    while (i) {
-        j = Math.floor(Math.random() * i);
-        x = arr[--i];
-        arr[i] = arr[j];
-        arr[j] = x;
-    }
-    return arr;
-}
-
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min) + 1;
 }
-
 //
 
 // collapseable
@@ -170,6 +158,18 @@ document.getElementById("collapse-button").addEventListener("click", (e) => {
     collapsed = !collapsed;
 });
 //
+
+
+document.getElementById("remove").addEventListener("click", ()=>{
+    document.getElementById("tutorial-div").style.display = "none";
+    document.getElementById("blur-bg").style.display = "none";
+});
+
+document.getElementById("headd").addEventListener("click", ()=>{
+    document.getElementById("tutorial-div").style.display = "block";
+    document.getElementById("blur-bg").style.display = "block";
+})
+
 
 //grid generation
 function generateGrid() {
@@ -288,7 +288,10 @@ function dropListener(e) {
 //
 
 // clear function
-document.getElementById("clear-board").addEventListener("click", generateGrid);
+document.getElementById("clear-board").addEventListener("click", ()=>{
+    generateGrid();
+    enableBtns();
+});
 document.getElementById("clear-path").addEventListener("click", ()=>{
     for(var i = 0; i < row_count; i++){
         for(var j = 0; j < col_count; j++){
@@ -360,7 +363,8 @@ async function addInnerWalls(h, minj, maxj, mini, maxi) {
 }
 
 async function addInnerWallsH(minj, maxj, mini, maxi) {
-    if (maxi - mini < 4) {
+    if(maxi - mini < 2) return;
+    else if (maxi - mini <= 6) {
         var y = Math.floor(randomNumber(minj, maxj) / 2) * 2;
         await addVWall(mini, maxi, y);
         await addInnerWalls(false, minj, y - 1, mini, maxi);
@@ -375,7 +379,8 @@ async function addInnerWallsH(minj, maxj, mini, maxi) {
 }
 
 async function addInnerWallsV(minj, maxj, mini, maxi) {
-    if (maxj - minj < 4) {
+    if (maxj - minj < 2) return;
+    else if (maxj - minj <= 6) {
         var x = Math.floor(randomNumber(mini, maxi) / 2) * 2;
         await addHWall(minj, maxj, x);
         await addInnerWalls(true, minj, maxj, mini, x - 1);
@@ -389,6 +394,7 @@ async function addInnerWallsV(minj, maxj, mini, maxi) {
 }
 
 async function addHWall(minj, maxj, x) {
+    if(x == 1 || x == row_count-2) return;
     var hole = Math.floor(randomNumber(minj, maxj) / 2) * 2 + 1;
     for (var i = minj; i <= maxj; i++) {
         await timeout();
@@ -398,8 +404,8 @@ async function addHWall(minj, maxj, x) {
 }
 
 async function addVWall(mini, maxi, y) {
+    if(y == 1 || y == col_count-2) return;
     var hole = Math.floor(randomNumber(mini, maxi) / 2) * 2 + 1;
-
     for (var i = mini; i <= maxi; i++) {
         await timeout();
         if (i == hole) setCell(i, y, "empty");
@@ -410,7 +416,7 @@ async function addVWall(mini, maxi, y) {
 document.getElementById("recursive-division").addEventListener("click", async () => {
     disableBtns();
     generateGrid();
-    await addOuterWalls();
+    addOuterWalls();
     await addInnerWalls(false, 1, col_count - 2, 1, row_count - 2);
     enableBtns();
 });
@@ -418,7 +424,7 @@ document.getElementById("recursive-division").addEventListener("click", async ()
 document.getElementById("recursive-division-vertical").addEventListener("click", async () => {
     disableBtns();
     generateGrid();
-    await addOuterWalls();
+    addOuterWalls();
     await addInnerWallsV(1, col_count - 2, 1, row_count - 2);
     enableBtns();
 });
@@ -426,7 +432,7 @@ document.getElementById("recursive-division-vertical").addEventListener("click",
 document.getElementById("recursive-division-horizontal").addEventListener("click", async () => {
     disableBtns();
     generateGrid();
-    await addOuterWalls();
+    addOuterWalls();
     await addInnerWallsH(1, col_count - 2, 1, row_count - 2);
     enableBtns();
 });
@@ -448,17 +454,16 @@ document.getElementById("binary-tree").addEventListener("click", async ()=>{
     disableBtns();
     generateGrid();
     for(var i = 0; i < row_count; i++){
+        await timeout();
         for(var j = 0; j < col_count; j++){
             if (i == row_count-1 || j == col_count-1 || i == 0 || j == 0) {
                 if(Grid[i][j] != -1 && Grid[i][j] != -2){
-                    // await timeout();
                     setCell(i, j, "wall");
                 }
             }
             else if(i%2 == 0 || j%2 == 0){
                 if(i == row_count-2 || j == col_count-2) continue;
                 if(Grid[i][j] != -1 && Grid[i][j] != -2){
-                    // await timeout();
                     setCell(i, j, "wall");
                 }
             }

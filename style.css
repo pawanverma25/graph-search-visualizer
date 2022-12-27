@@ -204,10 +204,14 @@ button {
 }
 
 #remove {
-    width: 20px;
+    padding: 5px;
+    width: 30px;
     position: sticky;
     top: 0%;
     left: 100%;
+    cursor: pointer;
+    background-color: #252a34;
+    border-radius: 50%;
 }
 
 #tut-h {

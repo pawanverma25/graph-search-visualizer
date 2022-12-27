@@ -65,6 +65,8 @@ let start = { x: 1, y: 1 },
     target = { x: row_count - 2, y: col_count - 2 };
 var being_dragged = 0, being_visualized = 0;
 const dir = [0, 1, 0, -1, 0];
+const dirx = [-1.-1,-1,0,1,1,1,0];
+const diry = [-1,0,1,1,1,0,-1,-1];
 var parents, visited;
 //
 
@@ -112,6 +114,17 @@ function setTerminalsEl(el, type) {
     var j = parseInt(el.getAttribute("id").split("-")[1]);
     setTerminals(i, j, type);
 }
+
+function shuffle() {
+    var arr = [0, 1, 2, 3];
+    var cur = 4,  randomIndex;
+    while (cur != 0) {
+      randomIndex = Math.floor(Math.random() * cur);
+      cur--;
+      [arr[cur], arr[randomIndex]] = [arr[randomIndex], arr[cur]];
+    } 
+    return arr;
+  }
 
 async function timeout() {
     return new Promise((resolve) => setTimeout(resolve, time));
@@ -487,6 +500,44 @@ document.getElementById("binary-tree").addEventListener("click", async ()=>{
     enableBtns();
 });
 
+var explored;
+
+function isValid(x, y){
+    if(x < 0 || y < 0 || x >= row_count || y >= col_count) return false;
+    return true;
+}
+
+async function backtracker(x, y){
+    var dirRan = shuffle();
+    for(var i = 0; i < 4; i++){
+        var newx = x + 2*dir[dirRan[i]], newy = y + 2*dir[dirRan[i]+1];
+        if(isValid(newx, newy) && explored[newx][newy] == 0){
+            await timeout();
+            setCell(x + dir[dirRan[i]], y + dir[dirRan[i]+1], "empty");
+            explored[newx][newy] = 1;
+            await backtracker(newx, newy);
+        }
+    }
+    explored[x][y] = 1;
+}
+
+document.getElementById("recursive-backtrack").addEventListener("click", async ()=>{
+    disableBtns();
+    generateGrid();
+    for(var i = 0; i < row_count; i++){
+        await timeout();
+        for(var j = 0; j < col_count; j++){
+            if(i%2 == 0 || j%2 == 0){
+                if(Grid[i][j] != -1 && Grid[i][j] != -2){
+                    setCell(i, j, "wall");
+                }
+            }
+        }
+    }
+    explored = new Array(row_count).fill().map(() => Array(col_count).fill(0));
+    await backtracker(1, 1);
+    enableBtns();
+});
 
 /// Path Finder AlgorithmsS
 async function bfs(){

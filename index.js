@@ -1,4 +1,3 @@
-window.onresize = function () { location.reload()};
 const container = document.getElementById("container");
 const table = document.getElementById("table");
 const sizeInput = document.getElementById("cell-dimen");

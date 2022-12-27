@@ -429,7 +429,7 @@ td {
 
 @media screen and (max-width: 600px) {
     #container {
-        height: 71.5vh;
+        height: 69vh;
     }
     #tutorial-div{
         width: 90%;

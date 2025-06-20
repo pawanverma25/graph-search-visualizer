@@ -279,10 +279,8 @@ button {
 }
 
 td {
-    transition: background 1s;
-    background: radial-gradient(circle at center, #eaeaea 5%);
-    background-repeat: no-repeat;
-    background-position: 0%;
+    transition: background-color 1s;
+    background-color: #eaeaea;
 }
 
 .empty {
